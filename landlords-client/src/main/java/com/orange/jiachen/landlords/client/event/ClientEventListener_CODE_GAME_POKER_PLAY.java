@@ -1,0 +1,131 @@
+package com.orange.jiachen.landlords.client.event;
+
+import com.orange.jiachen.landlords.client.SimpleClient;
+import com.orange.jiachen.landlords.client.entity.User;
+import com.orange.jiachen.landlords.entity.Poker;
+import com.orange.jiachen.landlords.entity.PokerSell;
+import com.orange.jiachen.landlords.enums.PokerLevel;
+import com.orange.jiachen.landlords.enums.ServerEventCode;
+import com.orange.jiachen.landlords.helper.MapHelper;
+import com.orange.jiachen.landlords.helper.PokerHelper;
+import com.orange.jiachen.landlords.print.SimplePrinter;
+import com.orange.jiachen.landlords.print.SimpleWriter;
+import io.netty.channel.Channel;
+import org.nico.noson.Noson;
+import org.nico.noson.entity.NoType;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public class ClientEventListener_CODE_GAME_POKER_PLAY extends ClientEventListener {
+
+    @Override
+    public void call(Channel channel, String data) {
+        Map<String, Object> map = MapHelper.parser(data);
+
+        SimplePrinter.printNotice("轮到你了，你的牌如下:");
+        List<Poker> pokers = Noson.convert(map.get("pokers"), new NoType<List<Poker>>() {
+        });
+        SimplePrinter.printPokers(pokers);
+        SimplePrinter.printNotice("场上其余的牌是");
+        SimplePrinter.printNotice(map.containsKey("lastPokers") ? map.get("lastPokers").toString() : "");
+
+        SimplePrinter.printNotice("请输入您提出的组合(输入[exit|e]退出当前房间，输入[pass|p]跳过当前回合，输入[view|v]显示所有有效的组合)。");
+        String line = SimpleWriter.write(User.INSTANCE.getNickname(), "combination");
+
+        if (line == null) {
+            SimplePrinter.printNotice("无效的输入");
+            call(channel, data);
+        } else {
+            if (line.equalsIgnoreCase("pass") || line.equalsIgnoreCase("p")) {
+                pushToServer(channel, ServerEventCode.CODE_GAME_POKER_PLAY_PASS);
+            } else if (line.equalsIgnoreCase("exit") || line.equalsIgnoreCase("e")) {
+                pushToServer(channel, ServerEventCode.CODE_CLIENT_EXIT);
+            } else if (line.equalsIgnoreCase("view") || line.equalsIgnoreCase("v")) {
+                if (!map.containsKey("lastSellPokers") || !map.containsKey("lastSellClientId")) {
+                    SimplePrinter.printNotice("Current server version unsupport this feature, need more than v1.2.4.");
+                    call(channel, data);
+                    return;
+                }
+                Object lastSellPokersObj = map.get("lastSellPokers");
+                if (lastSellPokersObj == null || Integer.valueOf(SimpleClient.id).equals(map.get("lastSellClientId"))) {
+                    SimplePrinter.printNotice("由你决定!");
+                    call(channel, data);
+                    return;
+                } else {
+                    List<Poker> lastSellPokers = Noson.convert(lastSellPokersObj, new NoType<List<Poker>>() {
+                    });
+                    List<PokerSell> sells = PokerHelper.validSells(PokerHelper.checkPokerType(lastSellPokers), pokers);
+                    if (sells.size() == 0) {
+                        SimplePrinter.printNotice("很遗憾，没有可以出牌的组合……");
+                        call(channel, data);
+                        return;
+                    }
+                    for (int i = 0; i < sells.size(); i++) {
+                        SimplePrinter.printNotice(i + 1 + ". " + PokerHelper.textOnlyNoType(sells.get(i).getSellPokers()));
+                    }
+                    while (true) {
+                        SimplePrinter.printNotice("您可以输入index来选择任何一个。(输入[back|b]返回。)");
+                        line = SimpleWriter.write(User.INSTANCE.getNickname(), "choose");
+                        if (line.equalsIgnoreCase("back") || line.equalsIgnoreCase("b")) {
+                            call(channel, data);
+                            return;
+                        } else {
+                            try {
+                                int choose = Integer.valueOf(line);
+                                if (choose < 1 || choose > sells.size()) {
+                                    SimplePrinter.printNotice("输入的数字必须在1 ~ " + sells.size() + "的范围内.");
+                                } else {
+                                    List<Poker> choosePokers = sells.get(choose - 1).getSellPokers();
+                                    List<Character> options = new ArrayList<>();
+                                    for (Poker poker : choosePokers) {
+                                        options.add(poker.getLevel().getAlias()[0]);
+                                    }
+                                    pushToServer(channel, ServerEventCode.CODE_GAME_POKER_PLAY, Noson.reversal(options.toArray(new Character[]{})));
+                                    break;
+                                }
+                            } catch (NumberFormatException e) {
+                                SimplePrinter.printNotice("请输入一个数字。");
+                            }
+                        }
+                    }
+                }
+
+//				PokerHelper.validSells(lastPokerSell, pokers);
+            } else {
+                String[] strs = line.split(" ");
+                List<Character> options = new ArrayList<>();
+                boolean access = true;
+                for (int index = 0; index < strs.length; index++) {
+                    String str = strs[index];
+                    for (char c : str.toCharArray()) {
+                        if (c == ' ' || c == '\t') {
+                        } else {
+                            if (!PokerLevel.aliasContains(c)) {
+                                access = false;
+                                break;
+                            } else {
+                                options.add(c);
+                            }
+                        }
+                    }
+                }
+                if (access) {
+                    pushToServer(channel, ServerEventCode.CODE_GAME_POKER_PLAY, Noson.reversal(options.toArray(new Character[]{})));
+                } else {
+                    SimplePrinter.printNotice("无效的输入");
+
+                    if (lastPokers != null) {
+                        SimplePrinter.printNotice(lastSellClientNickname + "[" + lastSellClientType + "] played:");
+                        SimplePrinter.printPokers(lastPokers);
+                    }
+
+                    call(channel, data);
+                }
+            }
+        }
+
+    }
+
+}
