@@ -2,6 +2,8 @@ package com.orange.jiachen.landlords.entity;
 
 import com.orange.jiachen.landlords.enums.RoomStatus;
 import com.orange.jiachen.landlords.enums.RoomType;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -9,14 +11,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
+@Data
+@NoArgsConstructor
 public class Room {
 
+    /**
+     * 房间id
+     */
     private int id;
-
+    /**
+     * 房间归属者
+     */
     private String roomOwner;
-
+    /**
+     * 房间状态
+     */
     private RoomStatus status;
-
+    /**
+     * 房间类型
+     */
     private RoomType type;
 
     private Map<Integer, ClientSide> clientSideMap;
@@ -50,8 +63,6 @@ public class Room {
 
     private int baseScore = 3;
 
-    public Room() {
-    }
 
     public Room(int id) {
         this.id = id;
@@ -65,21 +76,6 @@ public class Room {
         return this.baseScore * this.scoreRate;
     }
 
-    public int getBaseScore() {
-        return this.baseScore;
-    }
-
-    public void setBaseScore(int baseScore) {
-        this.baseScore = baseScore;
-    }
-
-    public int getScoreRate() {
-        return this.scoreRate;
-    }
-
-    public void setScoreRate(int scoreRate) {
-        this.scoreRate = scoreRate;
-    }
 
     public void initScoreRate() {
         this.scoreRate = 1;
@@ -129,45 +125,6 @@ public class Room {
         this.currentSellClient = currentSellClient;
     }
 
-    public long getLastFlushTime() {
-        return lastFlushTime;
-    }
-
-    public void setLastFlushTime(long lastFlushTime) {
-        this.lastFlushTime = lastFlushTime;
-    }
-
-    public int getLastSellClient() {
-        return lastSellClient;
-    }
-
-    public void setLastSellClient(int lastSellClient) {
-        this.lastSellClient = lastSellClient;
-    }
-
-    public int getLandlordId() {
-        return landlordId;
-    }
-
-    public void setLandlordId(int landlordId) {
-        this.landlordId = landlordId;
-    }
-
-    public LinkedList<ClientSide> getClientSideList() {
-        return clientSideList;
-    }
-
-    public void setClientSideList(LinkedList<ClientSide> clientSideList) {
-        this.clientSideList = clientSideList;
-    }
-
-    public List<Poker> getLandlordPokers() {
-        return landlordPokers;
-    }
-
-    public void setLandlordPokers(List<Poker> landlordPokers) {
-        this.landlordPokers = landlordPokers;
-    }
 
     public final String getRoomOwner() {
         return roomOwner;
@@ -201,15 +158,4 @@ public class Room {
         this.clientSideMap = clientSideMap;
     }
 
-    public int getFirstSellClient() {
-        return firstSellClient;
-    }
-
-    public void setFirstSellClient(int firstSellClient) {
-        this.firstSellClient = firstSellClient;
-    }
-
-    public List<ClientSide> getWatcherList() {
-        return watcherList;
-    }
 }

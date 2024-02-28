@@ -4,9 +4,11 @@ import com.orange.jiachen.landlords.enums.ClientRole;
 import com.orange.jiachen.landlords.enums.ClientStatus;
 import com.orange.jiachen.landlords.enums.ClientType;
 import io.netty.channel.Channel;
+import lombok.Data;
 
 import java.util.List;
 
+@Data
 public class ClientSide {
 
     private int id;
@@ -54,114 +56,12 @@ public class ClientSide {
         score = 0;
     }
 
-    public final ClientRole getRole() {
-        return role;
-    }
-
-    public final void setRole(ClientRole role) {
-        this.role = role;
-    }
-
-    public final String getNickname() {
-        return nickname;
-    }
-
-    public final void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public final Channel getChannel() {
-        return channel;
-    }
-
-    public final void setChannel(Channel channel) {
-        this.channel = channel;
-    }
-
-    public final int getRoomId() {
-        return roomId;
-    }
-
-    public final void setRoomId(int roomId) {
-        this.roomId = roomId;
-    }
-
-    public final List<Poker> getPokers() {
-        return pokers;
-    }
-
-    public final void setPokers(List<Poker> pokers) {
-        this.pokers = pokers;
-    }
-
-    public final int getScore() {
-        return score;
-    }
-
-    public final void setScore(int score) {
-        this.score = score;
-    }
 
     public final void addScore(int score) {
         this.score += score;
         this.scoreInc = score;
     }
 
-    public final void setScoreInc(int scoreInc) {
-        this.scoreInc = scoreInc;
-    }
-
-    public final int getScoreInc() {
-        return this.scoreInc;
-    }
-
-    public final ClientStatus getStatus() {
-        return status;
-    }
-
-    public final void setStatus(ClientStatus status) {
-        this.status = status;
-    }
-
-    public final ClientType getType() {
-        return type;
-    }
-
-    public final void setType(ClientType type) {
-        this.type = type;
-    }
-
-    public final int getId() {
-        return id;
-    }
-
-    public final void setId(int id) {
-        this.id = id;
-    }
-
-    public final ClientSide getNext() {
-        return next;
-    }
-
-    public final void setNext(ClientSide next) {
-        this.next = next;
-    }
-
-    public final ClientSide getPre() {
-        return pre;
-    }
-
-    public final void setPre(ClientSide pre) {
-        this.pre = pre;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
 
     @Override
     public int hashCode() {

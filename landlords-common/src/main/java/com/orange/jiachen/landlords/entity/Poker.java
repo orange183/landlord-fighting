@@ -2,41 +2,23 @@ package com.orange.jiachen.landlords.entity;
 
 import com.orange.jiachen.landlords.enums.PokerLevel;
 import com.orange.jiachen.landlords.enums.PokerType;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Poke, with {@link PokerLevel} and {@link PokerType}
  *
  * @author nico
  */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Poker {
 
     private PokerLevel level;
 
     private PokerType type;
-
-    public Poker() {
-    }
-
-    public Poker(PokerLevel level, PokerType type) {
-        this.level = level;
-        this.type = type;
-    }
-
-    public final PokerLevel getLevel() {
-        return level;
-    }
-
-    public final void setLevel(PokerLevel level) {
-        this.level = level;
-    }
-
-    public final PokerType getType() {
-        return type;
-    }
-
-    public final void setType(PokerType type) {
-        this.type = type;
-    }
 
 
     @Override

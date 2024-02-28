@@ -2,9 +2,11 @@ package com.orange.jiachen.landlords.entity;
 
 import com.orange.jiachen.landlords.enums.SellType;
 import com.orange.jiachen.landlords.helper.PokerHelper;
+import lombok.Data;
 
 import java.util.List;
 
+@Data
 public class PokerSell {
 
     private int score;
@@ -22,37 +24,6 @@ public class PokerSell {
         this.coreLevel = coreLevel;
     }
 
-    public final int getCoreLevel() {
-        return coreLevel;
-    }
-
-    public final void setCoreLevel(int coreLevel) {
-        this.coreLevel = coreLevel;
-    }
-
-    public final int getScore() {
-        return score;
-    }
-
-    public final void setScore(int score) {
-        this.score = score;
-    }
-
-    public final SellType getSellType() {
-        return sellType;
-    }
-
-    public final void setSellType(SellType sellType) {
-        this.sellType = sellType;
-    }
-
-    public final List<Poker> getSellPokers() {
-        return sellPokers;
-    }
-
-    public final void setSellPokers(List<Poker> sellPokers) {
-        this.sellPokers = sellPokers;
-    }
 
     @Override
     public String toString() {

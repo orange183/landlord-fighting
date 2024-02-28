@@ -1,5 +1,8 @@
 package com.orange.jiachen.landlords.entity;
 
+import lombok.Data;
+
+@Data
 public class Msg {
 
     private String code;
@@ -7,28 +10,4 @@ public class Msg {
     private String data;
 
     private String info;
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getData() {
-        return data;
-    }
-
-    public void setData(String data) {
-        this.data = data;
-    }
-
-    public String getInfo() {
-        return info;
-    }
-
-    public void setInfo(String info) {
-        this.info = info;
-    }
 }

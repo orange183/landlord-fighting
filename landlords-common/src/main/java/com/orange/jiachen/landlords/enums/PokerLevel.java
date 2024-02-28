@@ -90,7 +90,7 @@ public enum PokerLevel {
         this.level = level;
     }
 
-    public static final PokerLevel parseByName(String name) {
+    public static PokerLevel parseByName(String name) {
         if (name == null) {
             return null;
         }
@@ -102,7 +102,7 @@ public enum PokerLevel {
         return null;
     }
 
-    public static final PokerLevel parseByLevel(int l) {
+    public static PokerLevel parseByLevel(int l) {
         for (PokerLevel level : PokerLevel.values()) {
             if (level.level == l) {
                 return level;
