@@ -7,11 +7,9 @@ import com.orange.jiachen.landlords.features.Features;
 import com.orange.jiachen.landlords.print.SimplePrinter;
 import com.orange.jiachen.landlords.print.SimpleWriter;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class SimpleClient {
 
@@ -25,11 +23,21 @@ public class SimpleClient {
             "https://gitee.com/ainilili/ratel/raw/master/serverlist.json"                    // CN Gitee
     };
     public static int id = -1;
+    /**
+     * 服务器ip地址
+     */
     public static String serverAddress;
+    /**
+     * 服务器端口号
+     */
     public static int port = 1024;
+    /**
+     * 客户端与服务端的通信协议
+     */
     public static String protocol = "pb";
 
-    public static void main(String[] args) throws InterruptedException, IOException, URISyntaxException {
+    public static void main(String[] args) throws InterruptedException, URISyntaxException {
+        // 通过java -jar landlords-client-${version} -p 1024 -h 127.0.0.1 -ptl pb 手动指定服务器相关信息
         if (args != null && args.length > 0) {
             for (int index = 0; index < args.length; index = index + 2) {
                 if (index + 1 < args.length) {
@@ -45,10 +53,11 @@ public class SimpleClient {
                 }
             }
         }
+        // 没有指定的话读取配置文件获取服务器信息
         if (serverAddress == null) {
             List<String> serverAddressList = getServerAddressList();
-            if (serverAddressList == null || serverAddressList.size() == 0) {
-                throw new RuntimeException("Please use '-host' to setting server address.");
+            if (serverAddressList.isEmpty()) {
+                throw new RuntimeException("请使用'-host'去设置服务地址。");
             }
 
             SimplePrinter.printNotice("请选择一个服务:");
@@ -69,18 +78,18 @@ public class SimpleClient {
             port = Integer.parseInt(elements[1]);
         }
 
-        if (Objects.equals(protocol, "pb")) {
+        if (protocol.equals("pb")) {
             new ProtobufProxy().connect(serverAddress, port);
-        } else if (Objects.equals(protocol, "ws")) {
+        } else if (protocol.equals("ws")) {
             new WebsocketProxy().connect(serverAddress, port + 1);
         } else {
-            throw new UnsupportedOperationException("Unsupported protocol " + protocol);
+            throw new UnsupportedOperationException("不支持的协议：" + protocol);
         }
     }
 
     private static List<String> getServerAddressList() {
         List<String> serverAddressList = new ArrayList<>();
-        serverAddressList.add("127.0.0.1:1024:本地[v1.4.0]");
+        serverAddressList.add("127.0.0.1:1024:本地protobuf服务器[v1.4.0]");
         // for (String serverAddressSource : serverAddressSource) {
         //     try {
         //         String serverInfo = StreamUtils.convertToString(new URL(serverAddressSource));

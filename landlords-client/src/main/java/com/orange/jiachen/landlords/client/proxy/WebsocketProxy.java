@@ -21,34 +21,44 @@ import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
 
 public class WebsocketProxy implements Proxy {
+    private final EventLoopGroup group = new NioEventLoopGroup();
+
     @Override
     public void connect(String serverAddress, int port) throws InterruptedException, URISyntaxException {
         URI uri = new URI("ws://" + serverAddress + ":" + port + "/ratel");
-        EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap bootstrap = new Bootstrap()
                     .group(group)
                     .channel(NioSocketChannel.class)
-                    .handler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline()
-                                    .addLast(new IdleStateHandler(60 * 30, 0, 0, TimeUnit.SECONDS))
-                                    .addLast(new HttpClientCodec())
-                                    .addLast(new HttpObjectAggregator(8192))
-                                    .addLast(new WebSocketClientProtocolHandler(uri
-                                            , WebSocketVersion.V13
-                                            , null
-                                            , true
-                                            , new DefaultHttpHeaders(), 100000))
-                                    .addLast("ws", new WebsocketTransferHandler());
-                        }
-                    });
-            SimplePrinter.printNotice("Connecting to " + serverAddress + ":" + port);
+                    .handler(new ClientChannelInitializer(uri));
+
+            SimplePrinter.printNotice("正在连接" + serverAddress + ":" + port);
             Channel channel = bootstrap.connect(serverAddress, port).sync().channel();
             channel.closeFuture().sync();
         } finally {
             group.shutdownGracefully().sync();
+        }
+    }
+
+    private static class ClientChannelInitializer extends ChannelInitializer<SocketChannel> {
+        private final URI uri;
+
+        ClientChannelInitializer(URI uri) {
+            this.uri = uri;
+        }
+
+        @Override
+        protected void initChannel(SocketChannel ch) {
+            ch.pipeline()
+                    .addLast(new IdleStateHandler(60 * 30, 0, 0, TimeUnit.SECONDS))
+                    .addLast(new HttpClientCodec())
+                    .addLast(new HttpObjectAggregator(8192))
+                    .addLast(new WebSocketClientProtocolHandler(uri
+                            , WebSocketVersion.V13
+                            , null
+                            , true
+                            , new DefaultHttpHeaders(), 100000))
+                    .addLast("ws", new WebsocketTransferHandler());
         }
     }
 }
