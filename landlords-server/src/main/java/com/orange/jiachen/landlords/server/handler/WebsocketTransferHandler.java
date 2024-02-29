@@ -32,7 +32,7 @@ public class WebsocketTransferHandler extends SimpleChannelInboundHandler<TextWe
         clientSide.setRole(ClientRole.PLAYER);
 
         ServerContains.CLIENT_SIDE_MAP.put(clientSide.getId(), clientSide);
-        SimplePrinter.serverLog("Has client connect to the server：" + clientSide.getId());
+        SimplePrinter.serverLog("客户端连接到服务器：" + clientSide.getId());
         new Thread(() -> {
             try {
                 Thread.sleep(2000L);
@@ -49,7 +49,7 @@ public class WebsocketTransferHandler extends SimpleChannelInboundHandler<TextWe
         ServerEventCode code = ServerEventCode.valueOf(msg.getCode());
         if (!Objects.equals(code, ServerEventCode.CODE_CLIENT_HEAD_BEAT)) {
             ClientSide client = ServerContains.CLIENT_SIDE_MAP.get(getId(ctx.channel()));
-            SimplePrinter.serverLog(client.getId() + " | " + client.getNickname() + " do:" + code.getMsg());
+            SimplePrinter.serverLog(client.getId() + " | " + client.getNickname() + " 做:" + code.getMsg());
             ServerEventListener.get(code).call(client, msg.getData());
         }
     }
@@ -94,7 +94,7 @@ public class WebsocketTransferHandler extends SimpleChannelInboundHandler<TextWe
         int clientId = getId(channel);
         ClientSide client = ServerContains.CLIENT_SIDE_MAP.get(clientId);
         if (client != null) {
-            SimplePrinter.serverLog("Has client exit to the server：" + clientId + " | " + client.getNickname());
+            SimplePrinter.serverLog("客户端退出服务器：" + clientId + " | " + client.getNickname());
             ServerEventListener.get(ServerEventCode.CODE_CLIENT_OFFLINE).call(client, null);
         }
     }

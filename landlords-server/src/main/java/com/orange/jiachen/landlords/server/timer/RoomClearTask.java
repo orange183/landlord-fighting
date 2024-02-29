@@ -18,13 +18,19 @@ import java.util.TimerTask;
 
 public class RoomClearTask extends TimerTask {
 
-    // The room wait time of after create is 100s
+    /**
+     * 创建后的房间等待时间为100秒
+     */
     private static final long waitingStatusInterval = 1000 * 100;
 
-    // The room starting destroy time is 100s
+    /**
+     * 房间开始破坏的时间是100秒
+     */
     private static final long startingStatusInterval = 1000 * 300;
 
-    // The room live  time is 600s
+    /**
+     * 房间寿命是600秒
+     */
     private static final long liveTime = 1000 * 60 * 20;
 
     @Override
@@ -46,16 +52,16 @@ public class RoomClearTask extends TimerTask {
         long now = System.currentTimeMillis();
         for (Room room : rooms.values()) {
             long alreadyLiveTime = System.currentTimeMillis() - room.getCreateTime();
-            SimplePrinter.serverLog("room " + room.getId() + " already live " + alreadyLiveTime + "ms");
+            SimplePrinter.serverLog("房间 " + room.getId() + " 已经活跃 " + alreadyLiveTime + "ms");
             if (alreadyLiveTime > liveTime) {
-                SimplePrinter.serverLog("room " + room.getId() + " live time overflow " + liveTime + ", closed!");
+                SimplePrinter.serverLog("房间 " + room.getId() + " live time overflow " + liveTime + ", 关闭!");
                 ServerEventListener.get(ServerEventCode.CODE_CLIENT_EXIT).call(room.getClientSideList().get(0), null);
                 continue;
             }
 
             long diff = now - room.getLastFlushTime();
             if (room.getStatus() != RoomStatus.STARTING && diff > waitingStatusInterval) {
-                SimplePrinter.serverLog("room " + room.getId() + " starting waiting time overflow " + waitingStatusInterval + ", closed!");
+                SimplePrinter.serverLog("房间 " + room.getId() + " 启动等待时间溢出 " + waitingStatusInterval + ", 关闭!");
                 ServerEventListener.get(ServerEventCode.CODE_CLIENT_EXIT).call(room.getClientSideList().get(0), null);
                 continue;
             }
@@ -78,16 +84,16 @@ public class RoomClearTask extends TimerTask {
             ClientSide currentPlayer = room.getClientSideMap().get(room.getCurrentSellClient());
 
             if (allRobots) {
-                SimplePrinter.serverLog("room " + room.getId() + " all is robots, closed!");
+                SimplePrinter.serverLog("房间 " + room.getId() + " 都是机器人，关闭!");
                 ServerEventListener.get(ServerEventCode.CODE_CLIENT_EXIT).call(currentPlayer, null);
                 continue;
             }
-            // kick this client
+            // 踢掉这个客户端
             ChannelUtils.pushToClient(currentPlayer.getChannel(), ClientEventCode.CODE_CLIENT_KICK, null);
 
             notifyWatcherClientKick(room, currentPlayer);
 
-            // client current player
+            // 客户端当前玩家
             room.getClientSideMap().remove(currentPlayer.getId());
             room.getClientSideList().remove(currentPlayer);
 
@@ -116,10 +122,10 @@ public class RoomClearTask extends TimerTask {
 
             ServerContains.CLIENT_SIDE_MAP.put(robot.getId(), robot);
 
-            // init client
+            // 初始化客户端
             currentPlayer.init();
 
-            SimplePrinter.serverLog("room " + room.getId() + " player " + currentPlayer.getNickname() + " " + startingStatusInterval + "ms not operating, automatic custody!");
+            SimplePrinter.serverLog("房间 " + room.getId() + " 玩家 " + currentPlayer.getNickname() + " " + startingStatusInterval + "ms不操作，自动保管!");
 
             RobotEventListener.get(room.getLandlordId() == -1 ? ClientEventCode.CODE_GAME_LANDLORD_ELECT : ClientEventCode.CODE_GAME_POKER_PLAY).call(robot, null);
         }

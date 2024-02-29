@@ -21,7 +21,7 @@ public class ProtobufTransferHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
         ClientSide client = ServerContains.CLIENT_SIDE_MAP.get(getId(ctx.channel()));
-        SimplePrinter.serverLog("client " + client.getId() + "(" + client.getNickname() + ") disconnected");
+        SimplePrinter.serverLog("客户端 " + client.getId() + "(" + client.getNickname() + ") 断线");
         clientOfflineEvent(ctx.channel());
         ctx.channel().close();
     }
@@ -36,7 +36,7 @@ public class ProtobufTransferHandler extends ChannelInboundHandlerAdapter {
         clientSide.setRole(ClientRole.PLAYER);
 
         ServerContains.CLIENT_SIDE_MAP.put(clientSide.getId(), clientSide);
-        SimplePrinter.serverLog("Has client connect to the server: " + clientSide.getId());
+        SimplePrinter.serverLog("客户端连接到服务器: " + clientSide.getId());
 
         ChannelUtils.pushToClient(ch, ClientEventCode.CODE_CLIENT_CONNECT, String.valueOf(clientSide.getId()));
         ChannelUtils.pushToClient(ch, ClientEventCode.CODE_CLIENT_NICKNAME_SET, null);
@@ -50,7 +50,7 @@ public class ProtobufTransferHandler extends ChannelInboundHandlerAdapter {
             ServerEventCode code = ServerEventCode.valueOf(serverTransferData.getCode());
             if (code != ServerEventCode.CODE_CLIENT_HEAD_BEAT) {
                 ClientSide client = ServerContains.CLIENT_SIDE_MAP.get(getId(ctx.channel()));
-                SimplePrinter.serverLog(client.getId() + " | " + client.getNickname() + " do:" + code.getMsg());
+                SimplePrinter.serverLog(client.getId() + " | " + client.getNickname() + " 做:" + code.getMsg());
                 ServerEventListener.get(code).call(client, serverTransferData.getData());
             }
         }
@@ -86,7 +86,7 @@ public class ProtobufTransferHandler extends ChannelInboundHandlerAdapter {
         int clientId = getId(channel);
         ClientSide client = ServerContains.CLIENT_SIDE_MAP.get(clientId);
         if (client != null) {
-            SimplePrinter.serverLog("Has client exit to the server：" + clientId + " | " + client.getNickname());
+            SimplePrinter.serverLog("客户端退出服务器：" + clientId + " | " + client.getNickname());
             ServerEventListener.get(ServerEventCode.CODE_CLIENT_OFFLINE).call(client, null);
         }
     }

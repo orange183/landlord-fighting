@@ -54,9 +54,9 @@ public class ProtobufProxy implements Proxy {
             ChannelFuture f = bootstrap.bind().sync();
 
             SimplePrinter.serverLog("protobuf服务器启动成功，端口为：" + port);
-            // Init robot.
+            // 初始化机器人决策器
             RobotDecisionMakers.init();
-
+            // 启动定时任务
             ServerContains.THREAD_EXCUTER.execute(() -> {
                 Timer timer = new Timer();
                 timer.schedule(new RoomClearTask(), 0L, 3000L);

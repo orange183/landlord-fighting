@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ServerContains {
 
     /**
-     * Server port
+     * 服务端口号
      */
     public static int port = 1024;
 

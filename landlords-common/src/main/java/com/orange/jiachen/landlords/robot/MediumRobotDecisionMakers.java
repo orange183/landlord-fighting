@@ -12,10 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 
 /**
- * Trial game algorithm
- *
- * @author nico
- * @date 2020-12-19 16:36
+ * 试博弈算法
  */
 public class MediumRobotDecisionMakers extends AbstractRobotDecisionMakers {
 
@@ -36,13 +33,13 @@ public class MediumRobotDecisionMakers extends AbstractRobotDecisionMakers {
         PokerHelper.sortPoker(leftPoker);
         PokerHelper.sortPoker(rightPoker);
 
-        List<List<Poker>> pokersList = new ArrayList<List<Poker>>();
+        List<List<Poker>> pokersList = new ArrayList<>();
         pokersList.add(selfPoker);
         pokersList.add(rightPoker);
         pokersList.add(leftPoker);
 
         List<PokerSell> sells = PokerHelper.validSells(lastPokerSell, selfPoker);
-        if (sells.size() == 0) {
+        if (sells.isEmpty()) {
             return null;
         }
         PokerSell bestSell = null;
@@ -50,7 +47,7 @@ public class MediumRobotDecisionMakers extends AbstractRobotDecisionMakers {
         for (PokerSell sell : sells) {
             List<Poker> pokers = PokerHelper.clonePokers(selfPoker);
             pokers.removeAll(sell.getSellPokers());
-            if (pokers.size() == 0) {
+            if (pokers.isEmpty()) {
                 return sell;
             }
             pokersList.set(0, pokers);
@@ -78,7 +75,7 @@ public class MediumRobotDecisionMakers extends AbstractRobotDecisionMakers {
 
         List<Poker> original = pokersList.get(cursor);
         List<PokerSell> sells = PokerHelper.validSells(lastPokerSell, original);
-        if (sells.size() == 0) {
+        if (sells.isEmpty()) {
             if (sellCursor != cursor) {
                 return deduce(sellCursor, lastPokerSell, cursor + 1, pokersList, counter);
             }
@@ -86,7 +83,7 @@ public class MediumRobotDecisionMakers extends AbstractRobotDecisionMakers {
         for (PokerSell sell : sells) {
             List<Poker> pokers = PokerHelper.clonePokers(original);
             pokers.removeAll(sell.getSellPokers());
-            if (pokers.size() == 0) {
+            if (pokers.isEmpty()) {
                 return cursor == 0;
             } else {
                 pokersList.set(cursor, pokers);
@@ -110,7 +107,7 @@ public class MediumRobotDecisionMakers extends AbstractRobotDecisionMakers {
     }
 
     private static String serialPokers(List<Poker> pokers) {
-        if (pokers == null || pokers.size() == 0) {
+        if (pokers == null || pokers.isEmpty()) {
             return "n";
         }
         StringBuilder builder = new StringBuilder();
